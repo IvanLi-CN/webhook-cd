@@ -40,7 +40,7 @@ export class DeployTasksService {
   public async install(task: DeployTask) {
     task.status = DeployTaskStatuses.installing;
     await new Promise<void>((resolve, reject) => {
-      const npm = spawn('npm', ['install'], {
+      const npm = spawn('npm', ['ci'], {
         cwd: task.sourcePath,
       });
       npm.stdout.on('data', (data) => console.log(`stdout: ${data}`));
@@ -78,10 +78,7 @@ export class DeployTasksService {
   public async deploy(task: DeployTask) {
     task.status = DeployTaskStatuses.deploying;
     const deployPath = join('/Users/ivanli/Desktop', task.project.name);
-    await copyFile(
-      task.sourcePath,
-      deployPath,
-    );
+    await copyFile(task.sourcePath, deployPath);
     await new Promise<void>((resolve, reject) => {
       const npm = spawn('pm2', ['restart', './app.config.js'], {
         cwd: deployPath,
