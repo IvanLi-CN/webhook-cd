@@ -17,5 +17,7 @@ export class DeployTaskConsumer {
     await job.progress(task.status);
     await this.service.test(task);
     await job.progress(task.status);
+    await this.service.deploy(task);
+    await job.progress(task.status);
   }
 }

@@ -3,11 +3,12 @@ import { DeployTask } from './deploy-task';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { tmpdir } from 'os';
-import { copyFile, mkdtemp } from 'fs/promises';
+import { mkdtemp } from 'fs/promises';
 import { join } from 'path';
 import { gitP, SimpleGit } from 'simple-git';
 import { DeployTaskStatuses } from './deploy-task-statuses.enum';
 import { spawn } from 'child_process';
+import { move } from 'fs-extra';
 
 @Injectable()
 export class DeployTasksService {
@@ -50,7 +51,7 @@ export class DeployTasksService {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error('执行失败'));
+          reject(new Error('安装失败'));
         }
       });
     });
@@ -69,7 +70,7 @@ export class DeployTasksService {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error('执行失败'));
+          reject(new Error('测试失败'));
         }
       });
     });
@@ -78,9 +79,12 @@ export class DeployTasksService {
   public async deploy(task: DeployTask) {
     task.status = DeployTaskStatuses.deploying;
     const deployPath = join('/Users/ivanli/Desktop', task.project.name);
-    await copyFile(task.sourcePath, deployPath);
+    await move(task.sourcePath, deployPath, {
+      overwrite: true,
+    });
+    task.sourcePath = deployPath;
     await new Promise<void>((resolve, reject) => {
-      const npm = spawn('pm2', ['restart', './app.config.js'], {
+      const npm = spawn('npm', ['run', 'build'], {
         cwd: deployPath,
       });
       npm.stdout.on('data', (data) => console.log(`stdout: ${data}`));
@@ -90,7 +94,22 @@ export class DeployTasksService {
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error('执行失败'));
+          reject(new Error('构建失败'));
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      const pm2 = spawn('pm2', ['restart', './app.config.js'], {
+        cwd: deployPath,
+      });
+      pm2.stdout.on('data', (data) => console.log(`stdout: ${data}`));
+      pm2.stderr.on('data', (data) => console.log(`stderr: ${data}`));
+      pm2.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error('部署失败'));
         }
       });
     });
