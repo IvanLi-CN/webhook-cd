@@ -3,6 +3,7 @@ import { HooksController } from './hooks.controller';
 import { HooksService } from './hooks.service';
 import { BullModule } from '@nestjs/bull';
 import { ProjectsModule } from '../projects/projects.module';
+import { GithubWebhookGuard } from './github-webhook.guard';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { ProjectsModule } from '../projects/projects.module';
     }),
   ],
   controllers: [HooksController],
-  providers: [HooksService],
+  providers: [HooksService, GithubWebhookGuard],
 })
 export class HooksModule {}

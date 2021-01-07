@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { AppBaseEntity } from '../commons/entities/app-base-entity';
-import { Project } from '../projects/project.entry';
+import { Project } from '../projects/project';
 import { DeployTaskStatuses } from './deploy-task-statuses.enum';
 
 @Entity()

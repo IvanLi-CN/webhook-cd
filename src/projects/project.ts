@@ -1,13 +1,7 @@
 import { Column, Entity } from 'typeorm';
-import { GitRepository } from './git-repository.entity';
+import { GitRepository } from './git-repository';
 import { AppBaseEntity } from '../commons/entities/app-base-entity';
-import {
-  IsEmpty,
-  IsObject,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsEmpty, IsObject, IsString, Max, Min } from 'class-validator';
 
 @Entity()
 export class Project extends AppBaseEntity {
@@ -20,6 +14,9 @@ export class Project extends AppBaseEntity {
   @IsObject()
   @Column(() => GitRepository)
   repository: GitRepository;
+
+  @Column({ length: 512, nullable: true })
+  webhookSecret: string;
 
   @IsString()
   @Max(512)

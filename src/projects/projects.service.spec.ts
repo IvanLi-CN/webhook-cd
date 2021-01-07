@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProjectsService } from './projects.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Project } from './project.entry';
+import { Project } from './project';
 import { Repository } from 'typeorm';
 
 describe('ProjectsService', () => {
