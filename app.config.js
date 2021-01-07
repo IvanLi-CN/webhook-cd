@@ -8,6 +8,7 @@ module.exports = {
       ignore_watch: ['node_modules'],
       log_date_format: 'MM-DD HH:mm:ss.SSS Z',
       env: {},
+      max_restarts: 5,
     },
   ],
 };
