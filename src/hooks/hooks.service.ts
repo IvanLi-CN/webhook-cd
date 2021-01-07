@@ -20,8 +20,12 @@ export class HooksService {
     await this.deployQueue.add(DeployTask.createTask(project));
   }
 
-  public verifyGithubSignature(payloadBody: string, signature: string) {
-    const trust = createHmac('sha256', '12345678')
+  public verifyGithubSignature(
+    payloadBody: string,
+    signature: string,
+    secret: string,
+  ) {
+    const trust = createHmac('sha256', secret)
       .update(payloadBody)
       .digest('hex');
     const trustSignature = `sha256=${trust}`;

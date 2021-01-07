@@ -2,10 +2,10 @@ import {
   Body,
   Controller,
   Get,
-  Header,
+  Headers,
   Param,
   Post,
-  Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { HooksService } from './hooks.service';
@@ -18,15 +18,30 @@ export class HooksController {
     private readonly service: HooksService,
     private readonly projectsService: ProjectsService,
   ) {}
+
   @Post(':projectId')
   @UseGuards(GithubWebhookGuard)
-  async createInfo(@Param('projectId') projectId, @Body() body) {
+  async createInfo(
+    @Param('projectId') projectId,
+    @Body() body,
+    @Headers('X-Hub-Signature-256') signature: string,
+  ) {
     const project = await this.projectsService.getOne(projectId);
+    if (
+      !this.service.verifyGithubSignature(
+        JSON.stringify(body),
+        signature,
+        project.webhookSecret,
+      )
+    ) {
+      throw new UnauthorizedException('signature is wrong!');
+    }
     await this.service.deploy(project);
     return {
       message: 'success',
     };
   }
+
   @Get('')
   async getHookUrl() {
     return {

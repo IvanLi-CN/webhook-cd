@@ -34,6 +34,7 @@ describe('HooksService', () => {
         service.verifyGithubSignature(
           JSON.stringify(obj),
           'sha256=75e7d834e8352f39c96366b30349eb4c2a2d5ba75f9265f6fe32833669e4ec6b',
+          '12345678',
         ),
       ).toBeTruthy();
     });
