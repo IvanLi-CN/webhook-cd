@@ -1,5 +1,3 @@
 import { Project } from '../project';
 
-export class CreateProjectReq extends Project{
-
-}
+export class CreateProjectReq extends Project {}

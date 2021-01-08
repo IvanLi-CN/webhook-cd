@@ -10,6 +10,6 @@ export class PasswordConverter {
     return await hash(pwd, await genSalt());
   }
   async compare(rawPwd: string, storePwd: string): Promise<boolean> {
-    return await compare(rawPwd, storePwd)
+    return await compare(rawPwd, storePwd);
   }
 }

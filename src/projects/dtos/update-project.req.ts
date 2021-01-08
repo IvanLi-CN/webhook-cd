@@ -1,5 +1,3 @@
 import { Project } from '../project';
 
-export class UpdateProjectReq extends Project{
-
-}
+export class UpdateProjectReq extends Project {}

@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 
 @Catch()
@@ -20,20 +26,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ...ex,
           timestamp: Date.now(),
           path: request.url,
-        })
+        });
       } else {
-          response.status(status).json({
-            message: ex,
-            timestamp: Date.now(),
-            path: request.url,
-          });
+        response.status(status).json({
+          message: ex,
+          timestamp: Date.now(),
+          path: request.url,
+        });
       }
     } else if (exception instanceof EntityNotFoundError) {
       response.status(HttpStatus.NOT_FOUND).json({
         message: '资源未找到!',
         timestamp: Date.now(),
         path: request.url,
-      })
+      });
     } else {
       console.error('服务器内部错误');
       console.error(exception);

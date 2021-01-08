@@ -1,4 +1,4 @@
-import { Brackets, QueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   DuplicateEntityException,
   DuplicateFieldInfo,
