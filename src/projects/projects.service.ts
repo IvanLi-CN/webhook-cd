@@ -4,6 +4,7 @@ import { Project } from './project';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseDbService } from '../commons/services/base-db.service';
 import { TypeormHelper } from '../commons/services/typeorm-helper';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class ProjectsService extends BaseDbService<Project> {
@@ -23,20 +24,27 @@ export class ProjectsService extends BaseDbService<Project> {
 
   public async createOne(dto: Partial<Project>) {
     await this.isDuplicateEntity(this.repository, dto, ['name']);
+    if (!dto.webhookSecret) {
+      dto.webhookSecret = ProjectsService.generateSecret();
+    }
     return await this.repository.save(this.repository.create(dto));
   }
 
   public async updateOne(id: string, dto: Partial<Project>) {
-    const old = await this.repository.findOneOrFail(id);
+    await this.repository.findOneOrFail(id);
     await this.isDuplicateEntityForUpdate(this.repository, id, dto, ['name']);
     return await this.repository.update(id, dto);
   }
 
-  async remove(id: string) {
+  public async remove(id: string) {
     await this.repository.update(id, { isDelete: true });
   }
 
-  async getOne(id: string) {
+  public async getOne(id: string) {
     return this.repository.findOneOrFail({ id });
+  }
+
+  private static generateSecret(): string {
+    return createHash('sha1').update(Math.random().toString()).digest('hex');
   }
 }

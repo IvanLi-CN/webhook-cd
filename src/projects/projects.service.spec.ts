@@ -25,4 +25,10 @@ describe('ProjectsService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  describe('generateSecret', () => {
+    it('should return a 40-chars string.', () => {
+      expect(ProjectsService['generateSecret']()).toMatch(/^\w{40}$/);
+    });
+  });
 });
