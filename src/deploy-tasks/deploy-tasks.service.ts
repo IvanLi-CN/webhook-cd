@@ -78,7 +78,7 @@ export class DeployTasksService {
 
   public async deploy(task: DeployTask) {
     task.status = DeployTaskStatuses.deploying;
-    const deployPath = join('/Users/ivanli/Desktop', task.project.name);
+    const deployPath = join(process.env['DEPLOYMENT_DIR'], task.project.name);
     await move(task.sourcePath, deployPath, {
       overwrite: true,
     });

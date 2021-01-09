@@ -6,6 +6,7 @@ import { HooksModule } from './hooks/hooks.module';
 import { ProjectsModule } from './projects/projects.module';
 import { BullModule } from '@nestjs/bull';
 import { DeployTasksModule } from './deploy-tasks/deploy-tasks.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -30,6 +31,9 @@ import { DeployTasksModule } from './deploy-tasks/deploy-tasks.module';
       prefix: 'webhook-cd',
     }),
     DeployTasksModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
