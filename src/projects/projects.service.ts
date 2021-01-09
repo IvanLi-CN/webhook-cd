@@ -10,20 +10,20 @@ import { createHash } from 'crypto';
 export class ProjectsService extends BaseDbService<Project> {
   constructor(
     @InjectRepository(Project)
-    private readonly repository: Repository<Project>,
+    readonly repository: Repository<Project>,
   ) {
-    super();
+    super(repository);
   }
 
   public async getList() {
     const projectAlias = 'project';
     const qb = this.repository.createQueryBuilder(projectAlias);
     TypeormHelper.baseQuery(qb, projectAlias, {});
-    return await this.getListResult(qb);
+    return await this.listResultConverter(qb, {});
   }
 
   public async createOne(dto: Partial<Project>) {
-    await this.isDuplicateEntity(this.repository, dto, ['name']);
+    await this.isDuplicateEntity(dto, ['name']);
     if (!dto.webhookSecret) {
       dto.webhookSecret = ProjectsService.generateSecret();
     }
@@ -32,7 +32,7 @@ export class ProjectsService extends BaseDbService<Project> {
 
   public async updateOne(id: string, dto: Partial<Project>) {
     await this.repository.findOneOrFail(id);
-    await this.isDuplicateEntityForUpdate(this.repository, id, dto, ['name']);
+    await this.isDuplicateEntityForUpdate(id, dto, ['name']);
     return await this.repository.update(id, dto);
   }
 
