@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DeployTask } from './deploy-task';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, LessThan, Not, Repository } from 'typeorm';
 import { tmpdir } from 'os';
 import { mkdtemp } from 'fs/promises';
 import { join } from 'path';
@@ -9,6 +9,7 @@ import { gitP, SimpleGit } from 'simple-git';
 import { DeployTaskStatuses } from './deploy-task-statuses.enum';
 import { spawn } from 'child_process';
 import { move } from 'fs-extra';
+import { QueryDeployTasksArgs } from './dtos/query-deploy-tasks.args';
 
 @Injectable()
 export class DeployTasksService {
@@ -112,6 +113,19 @@ export class DeployTasksService {
           reject(new Error('部署失败'));
         }
       });
+    });
+  }
+
+  async getList(args: QueryDeployTasksArgs) {
+    return await this.repository.find({
+      where: {
+        createdAt: args.lastCreatedAt
+          ? LessThan(args.lastCreatedAt)
+          : Not(IsNull()),
+        projectId: args.projectId ?? Not(IsNull()),
+      },
+      take: args.pageSize ?? 100,
+      order: { createdAt: 'DESC' },
     });
   }
 }
